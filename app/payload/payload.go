@@ -2,7 +2,6 @@ package payload
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -52,13 +51,7 @@ func (a *AccountRequest) Bind(r *http.Request) error {
 	if a.Account == nil {
 		return errors.New("missing required fields")
 	}
-
-	switch a.Code {
-	case model.CurrencyUSD, model.CurrencyEUR, model.CurrencyRUB:
-		return nil
-	default:
-		return fmt.Errorf("unsupported currency_id: %d", a.Code)
-	}
+	return nil
 }
 
 // ArticleResponse is the response payload for the Article data model.

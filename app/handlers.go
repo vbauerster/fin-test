@@ -28,6 +28,7 @@ func (s *server) listPayments(w http.ResponseWriter, r *http.Request) {
 
 // createAccount persists the posted Account and returns it
 // back to the client as an acknowledgement.
+// Account.Balance is ignored on purpose.
 func (s *server) createAccount(w http.ResponseWriter, r *http.Request) {
 	data := &payload.AccountRequest{}
 	if err := render.Bind(r, data); err != nil {
@@ -35,23 +36,32 @@ func (s *server) createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data.Account.Code = data.ProtectedCode
-	// data.Account.Balance = data.ProtectedBalance
+	// Account.Balance is ignored on purpose, client should use deposit.
+	// data.Balance = data.ProtectedBalance
 
-	id, err := s.db.NewAccount(*data.Account)
-	if err != nil {
-		render.Render(w, r, payload.ErrInternal(err))
-		return
+	data.Code = data.ProtectedCode
+
+	switch data.Code {
+	case model.CurrencyUSD, model.CurrencyEUR, model.CurrencyRUB:
+		id, err := s.db.NewAccount(*data.Account)
+		if err != nil {
+			render.Render(w, r, payload.ErrInternal(err))
+			return
+		}
+
+		account, err := s.db.GetAccount(id)
+		if err != nil {
+			render.Render(w, r, payload.ErrInternal(err))
+			return
+		}
+
+		render.Status(r, http.StatusCreated)
+		render.Render(w, r, payload.NewAccountResponse(&account))
+	default:
+		render.Render(w, r, payload.ErrInvalidRequest(
+			fmt.Errorf("unsupported currency code: %d", data.Code),
+		))
 	}
-
-	account, err := s.db.GetAccount(id)
-	if err != nil {
-		render.Render(w, r, payload.ErrInternal(err))
-		return
-	}
-
-	render.Status(r, http.StatusCreated)
-	render.Render(w, r, payload.NewAccountResponse(&account))
 }
 
 // getAccount returns the specific Account. You'll notice it just
@@ -59,15 +69,16 @@ func (s *server) createAccount(w http.ResponseWriter, r *http.Request) {
 // if we made it this far, the Account must be on the context. In case
 // its not due to a bug, then it will panic, and our Recoverer will save us.
 func (s *server) getAccount(w http.ResponseWriter, r *http.Request) {
-	account := r.Context().Value(payload.AccountCtxKey).(*model.Account)
+	ctxAccount := r.Context().Value(payload.AccountCtxKey).(*model.Account)
 
-	if err := render.Render(w, r, payload.NewAccountResponse(account)); err != nil {
+	if err := render.Render(w, r, payload.NewAccountResponse(ctxAccount)); err != nil {
 		render.Render(w, r, payload.ErrRender(err))
 		return
 	}
 }
 
 // updateAccount updates an existing Account in our persistent store.
+// It will not update Balance and Code fields on purpose.
 func (s *server) updateAccount(w http.ResponseWriter, r *http.Request) {
 	ctxAccount := r.Context().Value(payload.AccountCtxKey).(*model.Account)
 	fmt.Printf("upd: %s\n", spew.Sdump(ctxAccount))
