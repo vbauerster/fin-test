@@ -13,10 +13,10 @@ fin-test REST API.
 - [SetContentType.func1]()
 - **/accounts/***
 	- **/**
-		- _GET_
-			- [(*server).listAccounts-fm](/app/handlers.go#L15)
 		- _POST_
-			- [(*server).createAccount-fm](/app/handlers.go#L32)
+			- [(*server).createAccount-fm](/app/handlers.go#L40)
+		- _GET_
+			- [(*server).listAccounts-fm](/app/handlers.go#L30)
 
 </details>
 <details>
@@ -30,12 +30,12 @@ fin-test REST API.
 	- **/{accountID}/***
 		- [(*server).accountCtx-fm](/app/middleware.go#L16)
 		- **/**
-			- _DELETE_
-				- [(*server).deleteAccount-fm](/app/handlers.go#L102)
 			- _GET_
-				- [(*server).getAccount-fm](/app/handlers.go#L71)
+				- [(*server).getAccount-fm](/app/handlers.go#L79)
 			- _PUT_
-				- [(*server).updateAccount-fm](/app/handlers.go#L82)
+				- [(*server).updateAccount-fm](/app/handlers.go#L91)
+			- _DELETE_
+				- [(*server).deleteAccount-fm](/app/handlers.go#L109)
 
 </details>
 <details>
@@ -50,7 +50,7 @@ fin-test REST API.
 		- [(*server).accountCtx-fm](/app/middleware.go#L16)
 		- **/deposit**
 			- _POST_
-				- [(*server).doDeposit-fm](/app/handlers.go#L114)
+				- [(*server).doDeposit-fm](/app/handlers.go#L121)
 
 </details>
 <details>
@@ -65,7 +65,7 @@ fin-test REST API.
 		- [(*server).accountCtx-fm](/app/middleware.go#L16)
 		- **/transfer**
 			- _POST_
-				- [(*server).doTransfer-fm](/app/handlers.go#L223)
+				- [(*server).doTransfer-fm](/app/handlers.go#L228)
 
 </details>
 <details>
@@ -80,7 +80,7 @@ fin-test REST API.
 		- [(*server).accountCtx-fm](/app/middleware.go#L16)
 		- **/withdraw**
 			- _POST_
-				- [(*server).doWithdraw-fm](/app/handlers.go#L165)
+				- [(*server).doWithdraw-fm](/app/handlers.go#L171)
 
 </details>
 <details>
@@ -93,8 +93,23 @@ fin-test REST API.
 - **/payments/***
 	- **/**
 		- _GET_
-			- [(*server).listPayments-fm](/app/handlers.go#L22)
+			- [(*server).listPayments-fm](/app/handlers.go#L14)
+
+</details>
+<details>
+<summary>`/payments/*/{paymentID}/*`</summary>
+
+- [RequestID]()
+- [Logger]()
+- [Recoverer]()
+- [SetContentType.func1]()
+- **/payments/***
+	- **/{paymentID}/***
+		- [(*server).paymentCtx-fm](/app/middleware.go#L40)
+		- **/**
+			- _GET_
+				- [(*server).getPayment-fm](/app/handlers.go#L21)
 
 </details>
 
-Total # of routes: 6
+Total # of routes: 7
