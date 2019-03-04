@@ -222,7 +222,6 @@ func (s *server) doWithdraw(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) doTransfer(w http.ResponseWriter, r *http.Request) {
 	account := r.Context().Value(payload.AccountCtxKey).(*model.Account)
-	spew.Dump(account)
 
 	data := &payload.PaymentRequest{
 		Payment: &model.Payment{
@@ -235,7 +234,8 @@ func (s *server) doTransfer(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, payload.ErrInvalidRequest(err))
 		return
 	}
-	spew.Dump(data)
+
+	data.DstAccountID = data.ProtectedDstAccountID
 
 	var rd render.Renderer
 	var id string
