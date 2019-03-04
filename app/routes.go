@@ -17,13 +17,13 @@ func (s *server) initRoutes() {
 		r.Post("/", s.createAccount) // POST /accounts
 
 		r.Route("/{accountID}", func(r chi.Router) {
-			r.Use(s.accountCtx)            // Load the *Account on the request context
-			r.Get("/", s.getAccount)       // GET /accounts/123
-			r.Put("/", s.updateAccount)    // PUT /accounts/123
-			r.Delete("/", s.deleteAccount) // DELETE /accounts/123
-			r.Post("/deposit", s.doDeposit)
-			r.Post("/withdraw", s.doWithdraw)
-			r.Post("/transfer", s.doTransfer)
+			r.Use(s.accountCtx)               // Load the *Account on the request context
+			r.Get("/", s.getAccount)          // GET /accounts/123
+			r.Put("/", s.updateAccount)       // PUT /accounts/123
+			r.Delete("/", s.deleteAccount)    // DELETE /accounts/123
+			r.Post("/deposit", s.doDeposit)   // POST /accounts/123/deposit
+			r.Post("/withdraw", s.doWithdraw) // POST /accounts/123/withdraw
+			r.Post("/transfer", s.doTransfer) // POST /accounts/123/transfer
 		})
 	})
 
