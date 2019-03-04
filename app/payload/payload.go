@@ -55,10 +55,10 @@ func (s *AccountRequest) Bind(r *http.Request) error {
 	return nil
 }
 
-// ArticleResponse is the response payload for the Article data model.
-// See NOTE above in ArticleRequest as well.
+// AccountResponse is the response payload for the Account data model.
+// See NOTE above in AccountRequest as well.
 //
-// In the ArticleResponse object, first a Render() is called on itself,
+// In the AccountResponse object, first a Render() is called on itself,
 // then the next field, and so on, all the way down the tree.
 // Render is called in top-down order, like a http handler middleware chain.
 type AccountResponse struct {
