@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/go-chi/render"
 	"github.com/vbauerster/fin-test/app/payload"
 	"github.com/vbauerster/fin-test/model"
@@ -81,7 +80,6 @@ func (s *server) getAccount(w http.ResponseWriter, r *http.Request) {
 // It will not update Balance and Code fields on purpose.
 func (s *server) updateAccount(w http.ResponseWriter, r *http.Request) {
 	ctxAccount := r.Context().Value(payload.AccountCtxKey).(*model.Account)
-	fmt.Printf("upd: %s\n", spew.Sdump(ctxAccount))
 
 	data := &payload.AccountRequest{Account: ctxAccount}
 	if err := render.Bind(r, data); err != nil {
@@ -89,7 +87,6 @@ func (s *server) updateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("upd: %s\n", spew.Sdump(data))
 	account, err := s.db.UpdateAccount(data.Account.ID, *data.Account)
 	if err != nil {
 		render.Render(w, r, payload.ErrInternal(err))
@@ -125,7 +122,6 @@ func (s *server) doDeposit(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, payload.ErrInvalidRequest(err))
 		return
 	}
-	spew.Dump(data)
 
 	var id string
 	err := s.db.DoTransaction(func(tx *store.MemDB) (err error) {
@@ -176,7 +172,6 @@ func (s *server) doWithdraw(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, payload.ErrInvalidRequest(err))
 		return
 	}
-	spew.Dump(data)
 
 	var id string
 	var rd render.Renderer
