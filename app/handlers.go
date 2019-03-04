@@ -11,15 +11,24 @@ import (
 	"github.com/vbauerster/fin-test/store"
 )
 
-func (s *server) listAccounts(w http.ResponseWriter, r *http.Request) {
-	if err := render.RenderList(w, r, payload.NewAccountListResponse(s.db.GetAccounts())); err != nil {
+func (s *server) listPayments(w http.ResponseWriter, r *http.Request) {
+	if err := render.RenderList(w, r, payload.NewPaymentListResponse(s.db.GetPayments())); err != nil {
 		render.Render(w, r, payload.ErrRender(err))
 		return
 	}
 }
 
-func (s *server) listPayments(w http.ResponseWriter, r *http.Request) {
-	if err := render.RenderList(w, r, payload.NewPaymentListResponse(s.db.GetPayments())); err != nil {
+func (s *server) getPayment(w http.ResponseWriter, r *http.Request) {
+	ctxPayment := r.Context().Value(payload.PaymentCtxKey).(*model.Payment)
+
+	if err := render.Render(w, r, payload.NewPaymentResponse(ctxPayment)); err != nil {
+		render.Render(w, r, payload.ErrRender(err))
+		return
+	}
+}
+
+func (s *server) listAccounts(w http.ResponseWriter, r *http.Request) {
+	if err := render.RenderList(w, r, payload.NewAccountListResponse(s.db.GetAccounts())); err != nil {
 		render.Render(w, r, payload.ErrRender(err))
 		return
 	}
@@ -78,6 +87,7 @@ func (s *server) getAccount(w http.ResponseWriter, r *http.Request) {
 
 // updateAccount updates an existing Account in our persistent store.
 // It will not update Balance and Code fields on purpose.
+// Does not create Account, if record not found.
 func (s *server) updateAccount(w http.ResponseWriter, r *http.Request) {
 	ctxAccount := r.Context().Value(payload.AccountCtxKey).(*model.Account)
 

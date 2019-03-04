@@ -29,5 +29,10 @@ func (s *server) initRoutes() {
 
 	s.router.Route("/payments", func(r chi.Router) {
 		r.Get("/", s.listPayments)
+
+		r.Route("/{paymentID}", func(r chi.Router) {
+			r.Use(s.paymentCtx)
+			r.Get("/", s.getPayment) // GET /payments/123
+		})
 	})
 }

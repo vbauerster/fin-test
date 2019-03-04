@@ -214,13 +214,3 @@ func (db *MemDB) getPayment(id string) (payment model.Payment, err error) {
 	}
 	return payment, ErrNotFound
 }
-
-// func selectAccounts(accounts []model.Account, predicate func(model.Account) bool) []*Account {
-// 	var selection []*Account
-// 	for _, account := range accounts {
-// 		if predicate(account) {
-// 			selection = append(selection, account)
-// 		}
-// 	}
-// 	return selection
-// }

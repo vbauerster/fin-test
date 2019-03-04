@@ -11,6 +11,7 @@ import (
 )
 
 var AccountCtxKey = &contextKey{"Account"}
+var PaymentCtxKey = &contextKey{"Payment"}
 
 type PaymentRequest struct {
 	*model.Payment
@@ -27,8 +28,8 @@ func (s *PaymentRequest) Bind(r *http.Request) error {
 	if s.Payment == nil {
 		return errors.New("missing required fields")
 	}
-	if s.Payment.SrcAccountID == s.DstAccountID {
-		return errors.New("nop payment, you're rich")
+	if s.SrcAccountID == s.ProtectedDstAccountID {
+		return errors.New("nop payment, you're so rich")
 	}
 	if s.Amount.IsZero() || s.Amount.IsNegative() {
 		return errors.New("bad amount")
@@ -45,10 +46,10 @@ type AccountRequest struct {
 	ProtectedBalance decimal.Decimal    `json:"balance"`
 }
 
-func (a *AccountRequest) Bind(r *http.Request) error {
-	// a.Account is nil if no Account fields are sent in the request. Return an
+func (s *AccountRequest) Bind(r *http.Request) error {
+	// s.Account is nil if no Account fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
-	if a.Account == nil {
+	if s.Account == nil {
 		return errors.New("missing required fields")
 	}
 	return nil
