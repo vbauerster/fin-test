@@ -3,6 +3,7 @@ package store
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"sync"
 	"time"
@@ -51,6 +52,7 @@ func New() *MemDB {
 
 // Close implement io.Closer
 func (db *MemDB) Close() error {
+	log.Println("db closed!")
 	return nil
 }
 
