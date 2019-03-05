@@ -141,6 +141,8 @@ func TestTransferAccount(t *testing.T) {
 	is.NoErr(json.NewDecoder(res.Body).Decode(pr))
 	is.NoErr(res.Body.Close())
 
+	is.True(pr.Amount.Equal(amount))
+
 	res, err = getAccount(ts.URL, accounts[1])
 	is.NoErr(err)
 	is.Equal(res.StatusCode, http.StatusOK)
