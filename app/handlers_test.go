@@ -35,6 +35,12 @@ func getAccount(url, id string) (*http.Response, error) {
 	return http.DefaultClient.Do(req)
 }
 
+func getPayment(url, id string) (*http.Response, error) {
+	uri := fmt.Sprintf("%s%s%s", url, "/payments/", id)
+	req, _ := http.NewRequest(http.MethodGet, uri, nil)
+	return http.DefaultClient.Do(req)
+}
+
 func doDeposit(url, accID string, amount decimal.Decimal) (*http.Response, error) {
 	uri := fmt.Sprintf("%s%s%s%s", url, "/accounts/", accID, "/deposit")
 	payload := fmt.Sprintf("{%q: %q}", "amount", amount)
@@ -131,6 +137,8 @@ func TestTransferAccount(t *testing.T) {
 	res, err = doTransfer(ts.URL, accounts[0], accounts[1], amount)
 	is.NoErr(err)
 	is.Equal(res.StatusCode, http.StatusCreated)
+	pr := new(payload.PaymentResponse)
+	is.NoErr(json.NewDecoder(res.Body).Decode(pr))
 	is.NoErr(res.Body.Close())
 
 	res, err = getAccount(ts.URL, accounts[1])
@@ -140,6 +148,14 @@ func TestTransferAccount(t *testing.T) {
 	is.NoErr(json.NewDecoder(res.Body).Decode(ar))
 	is.NoErr(res.Body.Close())
 
-	is.Equal(accounts[1], ar.ID)
 	is.True(ar.Balance.Equal(amount))
+
+	res, err = getPayment(ts.URL, pr.ID)
+	is.NoErr(err)
+	is.Equal(res.StatusCode, http.StatusOK)
+	gpr := new(payload.PaymentResponse)
+	is.NoErr(json.NewDecoder(res.Body).Decode(gpr))
+	is.NoErr(res.Body.Close())
+
+	is.Equal(pr, gpr)
 }
